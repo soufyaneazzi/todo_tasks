@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="to do.png" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Rubik+Distressed&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: rgb(240, 240, 200);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            gap: 4px;
+            font-family: 'Quicksand', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+        
+        .dark {
+            color: white;
+            background-color: #1a1a2e;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("https://images.unsplash.com/photo-1538370965046-79c0d6907d47?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80");
+            background-size: cover;
+            transition: 0.5s;
+        }
+        
+        .container1 {
+            width: 200px;
+            min-height: 100vh;
+            background-color: #A9CDD3;
+            flex-shrink: 0;
+            border-radius: 0 20px 20px 0;
+            box-shadow: 1px 1px 10px 1px #bfdbe0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .container2 {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .profil {
+            background-color: #fff;
+            height: 75px;
+            margin: 5px;
+            border: none;
+            border-radius: 10% 50% 10% 50%;
+            color: rgb(200, 122, 122);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 500;
+            font-size: large;
+            text-decoration: lightcoral;
+        }
+        
+        ul {
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #fff;
+            margin-left: 30px;
+            display: block;
+            padding: 10px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        li {
+            transition: 0.4s;
+            list-style: none;
+        }
+        
+        .tasks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .tasks, .finished {
+            min-height: 200px;
+            border: none;
+            border-radius: 18px;
+            box-shadow: 1px 6px 10px 1px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tasks {
+            background-color: #AAB092;
+        }
+        
+        .finished {
+            background-color: #D7D498;
+        }
+        
+        .text-input {
+            height: 65px;
+            width: 100%;
+            max-width: 600px;
+            border: none;
+            border-radius: 18px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: rgb(236, 235, 234);
+            padding: 0 20px;
+            font-family: "Rubik Distressed", system-ui;
+            font-style: normal;
+            font-weight: 400;
+            font-size: large;
+            margin: 20px auto;
+            transition: all 0.3s ease;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            background-color: rgb(226, 135, 69);
+            color: white;
+        }
+        
+        .task-header {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 300px;
+            padding: 5px;
+        }
+        
+        .task-item {
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .task-content {
+            flex-grow: 1;
+            cursor: pointer;
+            word-break: break-word;
+        }
+        
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .task-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .task-actions button:hover {
+            opacity: 1;
+        }
+        
+        .delete-btn {
+            color: #ff4757;
+        }
+        
+        .complete-btn {
+            color: #2ed573;
+        }
+        
+        .favorite-btn {
+            color: #ff9f43;
+        }
+        
+        .favorited {
+            color: #ff9f43;
+            opacity: 1 !important;
+        }
+        
+        #theme-toggle-button {
+            position: relative;
+            display: inline-block;
+            width: 70px;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        #toggle {
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        
+        .theme-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .theme-text {
+            color: #9b9b9b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .dark .modal-content {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .close-btn:hover {
+            color: #34495e;
+        }
+        
+        .dark .close-btn:hover {
+            color: #ecf0f1;
+        }
+        
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .rating-stars i {
+            font-size: 32px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .rating-stars i.active {
+            color: #f1c40f;
+        }
+        
+        .rating-stars i:hover {
+            color: #f1c40f;
+        }
+        
+        .submit-rating {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-rating:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .container1 {
+                width: 100%;
+                min-height: auto;
+                border-radius: 0 0 20px 20px;
+                margin-bottom: 10px;
+            }
+            
+            ul {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+            
+            a {
+                margin-left: 0;
+            }
+            
+            .profil {
+                height: 60px;
+                font-size: medium;
+            }
+            
+            .theme-container {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin: 15px 0;
+            }
+            
+            .text-input {
+                width: 90%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container2 {
+                padding: 10px;
+            }
+            
+            .tasks, .finished {
+                min-height: 150px;
+            }
+            
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .task-actions {
+                align-self: flex-end;
+            }
+            
+            .text-input {
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: rgba(0, 0, 0, 0.5);
+            font-style: italic;
+        }
+        
+        .dark .empty-state {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-btn {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background-color: rgba(255, 255, 255, 0.7);
+            font-weight: bold;
+        }
+        
+        .dark .filter-btn {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        .dark .filter-btn.active {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container1">
+        <div class="profil">
+            لا اله الا الله
+        </div>
+        <hr>
+        <ul>
+            <li><a class="nav-link" data-target="home"><i class="fas fa-home"></i> Home</a></li>
+            <li><a class="nav-link" data-target="favorites"><i class="fas fa-star"></i> Favorites</a></li>
+            <li><a class="nav-link" data-target="rate"><i class="fas fa-star-half-alt"></i> Rate Us</a></li>
+            <li><a class="nav-link" data-target="about"><i class="fas fa-info-circle"></i> About</a></li>
+        </ul>
+    </div>
+    
+    <div class="container2" id="cnt2">
+        <div class="theme-container">
+            <label id="theme-toggle-button">
+                <input type="checkbox" id="toggle">
+                <svg viewBox="0 0 69.667 44" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(3.5 3.5)" data-name="Component 15 – 1" id="Component_15_1">
+                        <g filter="url(#container)" transform="matrix(1, 0, 0, 1, -3.5, -3.5)">
+                            <rect fill="#83cbd8" transform="translate(3.5 3.5)" rx="17.5" height="35" width="60.667" data-name="container" id="container"></rect>
+                        </g>
+                        
+                        <g transform="translate(2.333 2.333)" id="button">
+                            <g data-name="sun" id="sun">
+                                <g filter="url(#sun-outer)" transform="matrix(1, 0, 0, 1, -5.83, -5.83)">
+                                    <circle fill="#f8e664" transform="translate(5.83 5.83)" r="15.167" cy="15.167" cx="15.167" data-name="sun-outer" id="sun-outer-2"></circle>
+                                </g>
+                                <g filter="url(#sun)" transform="matrix(1, 0, 0, 1, -5.83, -5.83)">
+                                    <path fill="rgba(246,254,247,0.29)" transform="translate(9.33 9.33)" d="M11.667,0A11.667,11.667,0,1,1,0,11.667,11.667,11.667,0,0,1,11.667,0Z" data-name="sun" id="sun-3"></path>
+                                </g>
+                                <circle fill="#fcf4b9" transform="translate(8.167 8.167)" r="7" cy="7" cx="7" id="sun-inner"></circle>
+                            </g>
+                            
+                            <g data-name="moon" id="moon">
+                                <g filter="url(#moon)" transform="matrix(1, 0, 0, 1, -31.5, -5.83)">
+                                    <circle fill="#cce6ee" transform="translate(31.5 5.83)" r="15.167" cy="15.167" cx="15.167" data-name="moon" id="moon-3"></circle>
+                                </g>
+                                <g fill="#a6cad0" transform="translate(-24.415 -1.009)" id="patches">
+                                    <circle transform="translate(43.009 4.496)" r="2" cy="2" cx="2"></circle>
+                                    <circle transform="translate(39.366 17.952)" r="2" cy="2" cx="2" data-name="patch"></circle>
+                                    <circle transform="translate(33.016 8.044)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                                    <circle transform="translate(51.081 18.888)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                                    <circle transform="translate(33.016 22.503)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                                    <circle transform="translate(50.081 10.53)" r="1.5" cy="1.5" cx="1.5" data-name="patch"></circle>
+                                </g>
+                            </g>
+                        </g>
+                        
+                        <g filter="url(#cloud)" transform="matrix(1, 0, 0, 1, -3.5, -3.5)">
+                            <path fill="#fff" transform="translate(-3466.47 -160.94)" d="M3512.81,173.815a4.463,4.463,0,0,1,2.243.62.95.95,0,0,1,.72-1.281,4.852,4.852,0,0,1,2.623.519c.034.02-.5-1.968.281-2.716a2.117,2.117,0,0,1,2.829-.274,1.821,1.821,0,0,1,.854,1.858c.063.037,2.594-.049,3.285,1.273s-.865,2.544-.807,2.626a12.192,12.192,0,0,1,2.278.892c.553.448,1.106,1.992-1.620,2.927a7.742,7.742,0,0,1-3.762-.3c-1.28-.49-1.181-2.65-1.137-2.624s-1.417,2.2-2.623,2.2a4.172,4.172,0,0,1-2.394-1.206,3.825,3.825,0,0,1-2.771.774c-3.429-.46-2.333-3.267-2.2-3.55A3.721,3.721,0,0,1,3512.81,173.815Z" data-name="cloud" id="cloud"></path>
+                        </g>
+                        
+                        <g fill="#def8ff" transform="translate(3.585 1.325)" id="stars">
+                            <path transform="matrix(-1, 0.017, -0.017, -1, 24.231, 3.055)" d="M.774,0,.566.559,0,.539.458.933.25,1.492l.485-.361.458.394L1.024.953,1.509.592.943.572Z"></path>
+                            <path transform="matrix(-0.777, 0.629, -0.629, -0.777, 23.185, 12.358)" d="M1.341.529.836.472.736,0,.505.46,0,.4.4.729l-.231.46L.605.932l.4.326L.9.786Z" data-name="star"></path>
+                            <path transform="matrix(0.438, 0.899, -0.899, 0.438, 23.177, 29.735)" d="M.015,1.065.475.9l.285.365L.766.772l.46-.164L.745.494.751,0,.481.407,0,.293.285.658Z" data-name="star"></path>
+                            <path transform="translate(12.677 0.388) rotate(104)" d="M1.161,1.6,1.059,1,1.574.722.962.607.86,0,.613.572,0,.457.446.881.2,1.454l.516-.274Z" data-name="star"></path>
+                            <path transform="matrix(-0.07, 0.998, -0.998, -0.07, 11.066, 15.457)" d="M.873,1.648l.114-.62L1.579.945,1.03.62,1.144,0,.706.464.157.139.438.7,0,1.167l.592-.083Z" data-name="star"></path>
+                            <path transform="translate(8.326 28.061) rotate(11)" d="M.593,0,.638.724,0,.982l.7.211.045.724.36-.64.7.211L1.342.935,1.7.294,1.063.552Z" data-name="star"></path>
+                            <path transform="translate(5.012 5.962) rotate(172)" d="M.816,0,.5.455,0,.311.323.767l-.312.455.516-.215.323.456L.827.911,1.343.7.839.552Z" data-name="star"></path>
+                            <path transform="translate(2.218 14.616) rotate(169)" d="M1.261,0,.774.571.114.3.487.967,0,1.538.728,1.32l.372.662.047-.749.728-.218L1.215.749Z" data-name="star"></path>
+                        </g>
+                    </g>
+                </svg>
+            </label>
+            <span class="theme-text">Dark Mode</span>
+        </div>
+        
+        <input type="text" class="text-input" placeholder="What do you think to do today..." id="taskInput">
+        
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All Tasks</button>
+            <button class="filter-btn" data-filter="favorite">Favorites</button>
+        </div>
+        
+        <div class="tasks-container">
+            <div class="tasks">
+                <div class="task-header">
+                    <span>Pending Tasks</span>
+                    <span id="pending-count">0</span>
+                </div>
+                <div class="task-list" id="pending-tasks">
+                    <div class="empty-state">No pending tasks. Add a new task above!</div>
+                </div>
+            </div>
+            
+            <div class="finished">
+                <div class="task-header">
+                    <span>Completed Tasks</span>
+                    <span id="completed-count">0</span>
+                </div>
+                <div class="task-list" id="completed-tasks">
+                    <div class="empty-state">No completed tasks yet.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rate Us Modal -->
+    <div id="rate-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Rate Our To-Do List</h2>
+            <p>How would you rate your experience with our app?</p>
+            <div class="rating-stars">
+                <i class="fas fa-star" data-rating="1"></i>
+                <i class="fas fa-star" data-rating="2"></i>
+                <i class="fas fa-star" data-rating="3"></i>
+                <i class="fas fa-star" data-rating="4"></i>
+                <i class="fas fa-star" data-rating="5"></i>
+            </div>
+            <button class="submit-rating">Submit Rating</button>
+        </div>
+    </div>
+    
+    <!-- About Modal -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>About Our To-Do List</h2>
+            <p>This is a feature-rich to-do list application designed to help you organize your tasks efficiently.</p>
+            <br>
+            <h3>Features:</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Add, complete, and delete tasks</li>
+                <li>Mark tasks as favorites</li>
+                <li>Dark/light mode toggle</li>
+                <li>Responsive design for all devices</li>
+                <li>Local storage to save your tasks</li>
+            </ul>
+            <br>
+            <p>Version: 1.0.0</p>
+            <p>Created by: Soufyane Azzi</p>
+        </div>
+    </div>
+    
+    <!-- Favorites View -->
+    <div id="favorites-view" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Your Favorite Tasks</h2>
+            <div class="task-list" id="favorites-list">
+                <div class="empty-state">You don't have any favorite tasks yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const taskInput = document.getElementById('taskInput');
+            const pendingTasksList = document.getElementById('pending-tasks');
+            const completedTasksList = document.getElementById('completed-tasks');
+            const favoritesList = document.getElementById('favorites-list');
+            const pendingCount = document.getElementById('pending-count');
+            const completedCount = document.getElementById('completed-count');
+            const themeToggle = document.getElementById('toggle');
+            const modals = document.querySelectorAll('.modal');
+            const closeButtons = document.querySelectorAll('.close-btn');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const ratingStars = document.querySelectorAll('.rating-stars i');
+            const submitRating = document.querySelector('.submit-rating');
+            
+            // Load tasks from localStorage
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            let currentFilter = 'all';
+            let currentRating = 0;
+            
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.checked = true;
+            }
+            
+            // Theme toggle functionality
+            themeToggle.addEventListener('change', function() {
+                document.body.classList.toggle('dark');
+                localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            });
+            
+            // Add task on Enter key press
+            taskInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim() !== '') {
+                    addTask(this.value.trim());
+                    this.value = '';
+                    updateTaskCount();
+                }
+            });
+            
+            // Navigation links functionality
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    if (target === 'home') {
+                        // Already on home page
+                        return;
+                    }
+                    
+                    // Show the appropriate modal
+                    document.getElementById(`${target}-modal`).style.display = 'flex';
+                    
+                    if (target === 'favorites') {
+                        renderFavorites();
+                    }
+                });
+            });
+            
+            // Close modal buttons
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modals.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                modals.forEach(modal => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Filter buttons functionality
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    renderTasks();
+                });
+            });
+            
+            // Rating stars functionality
+            ratingStars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    currentRating = rating;
+                    
+                    ratingStars.forEach(s => {
+                        const starRating = parseInt(s.getAttribute('data-rating'));
+                        if (starRating <= rating) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            // Submit rating functionality
+            submitRating.addEventListener('click', function() {
+                if (currentRating > 0) {
+                    alert(`Thank you for your ${currentRating}-star rating!`);
+                    document.getElementById('rate-modal').style.display = 'none';
+                    currentRating = 0;
+                    ratingStars.forEach(star => star.classList.remove('active'));
+                } else {
+                    alert('Please select a rating first.');
+                }
+            });
+            
+            // Function to add a new task
+            function addTask(taskText) {
+                const taskId = Date.now();
+                const task = {
+                    id: taskId,
+                    text: taskText,
+                    completed: false,
+                    favorite: false
+                };
+                
+                tasks.push(task);
+                saveTasks();
+                renderTasks();
+            }
+            
+            // Function to toggle task completion
+            function toggleTaskCompletion(taskId) {
+                tasks = tasks.map(task => {
+                    if (task.id === taskId) {
+                        return {...task, completed: !task.completed};
+                    }
+                    return task;
+                });
+                
+                saveTasks();
+                renderTasks();
+                updateTaskCount();
+            }
+            
+            // Function to toggle task favorite status
+            function toggleTaskFavorite(taskId) {
+                tasks = tasks.map(task => {
+                    if (task.id === taskId) {
+                        return {...task, favorite: !task.favorite};
+                    }
+                    return task;
+                });
+                
+                saveTasks();
+                renderTasks();
+            }
+            
+            // Function to delete a task
+            function deleteTask(taskId) {
+                tasks = tasks.filter(task => task.id !== taskId);
+                saveTasks();
+                renderTasks();
+                updateTaskCount();
+            }
+            
+            // Function to save tasks to localStorage
+            function saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            
+            // Function to render tasks based on current filter
+            function renderTasks() {
+                pendingTasksList.innerHTML = '';
+                completedTasksList.innerHTML = '';
+                
+                let pendingTasks = tasks.filter(task => !task.completed);
+                let completedTasks = tasks.filter(task => task.completed);
+                
+                // Apply filter if needed
+                if (currentFilter === 'favorite') {
+                    pendingTasks = pendingTasks.filter(task => task.favorite);
+                    completedTasks = completedTasks.filter(task => task.favorite);
+                }
+                
+                if (pendingTasks.length === 0) {
+                    pendingTasksList.innerHTML = '<div class="empty-state">No pending tasks.</div>';
+                } else {
+                    pendingTasks.forEach(task => {
+                        pendingTasksList.appendChild(createTaskElement(task));
+                    });
+                }
+                
+                if (completedTasks.length === 0) {
+                    completedTasksList.innerHTML = '<div class="empty-state">No completed tasks yet.</div>';
+                } else {
+                    completedTasks.forEach(task => {
+                        completedTasksList.appendChild(createTaskElement(task));
+                    });
+                }
+                
+                updateTaskCount();
+            }
+            
+            // Function to render favorites
+            function renderFavorites() {
+                favoritesList.innerHTML = '';
+                
+                const favoriteTasks = tasks.filter(task => task.favorite);
+                
+                if (favoriteTasks.length === 0) {
+                    favoritesList.innerHTML = '<div class="empty-state">You don\'t have any favorite tasks yet.</div>';
+                } else {
+                    favoriteTasks.forEach(task => {
+                        favoritesList.appendChild(createTaskElement(task, true));
+                    });
+                }
+            }
+            
+            // Function to create task element
+            function createTaskElement(task, inFavorites = false) {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                
+                const taskContent = document.createElement('div');
+                taskContent.className = `task-content ${task.completed ? 'completed' : ''}`;
+                taskContent.textContent = task.text;
+                if (!inFavorites) {
+                    taskContent.addEventListener('click', () => toggleTaskCompletion(task.id));
+                }
+                
+                const taskActions = document.createElement('div');
+                taskActions.className = 'task-actions';
+                
+                const favoriteBtn = document.createElement('button');
+                favoriteBtn.className = `favorite-btn ${task.favorite ? 'favorited' : ''}`;
+                favoriteBtn.innerHTML = '<i class="fas fa-star"></i>';
+                favoriteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleTaskFavorite(task.id);
+                });
+                
+                const completeBtn = document.createElement('button');
+                completeBtn.className = 'complete-btn';
+                completeBtn.innerHTML = task.completed ? '<i class="fas fa-undo"></i>' : '<i class="fas fa-check"></i>';
+                completeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleTaskCompletion(task.id);
+                });
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteTask(task.id);
+                });
+                
+                taskActions.appendChild(favoriteBtn);
+                if (!inFavorites) {
+                    taskActions.appendChild(completeBtn);
+                }
+                taskActions.appendChild(deleteBtn);
+                
+                taskItem.appendChild(taskContent);
+                taskItem.appendChild(taskActions);
+                
+                return taskItem;
+            }
+            
+            // Function to update task count
+            function updateTaskCount() {
+                const pendingTasks = tasks.filter(task => !task.completed);
+                const completedTasks = tasks.filter(task => task.completed);
+                
+                pendingCount.textContent = pendingTasks.length;
+                completedCount.textContent = completedTasks.length;
+            }
+            
+            // Initial render
+            renderTasks();
+        });
+    </script>
+</body>
+</html>
